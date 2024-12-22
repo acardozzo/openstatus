@@ -1,23 +1,24 @@
-import { createRoute, z } from "@hono/zod-openapi";
-import { and, eq, gte, isNull, sql } from "@openstatus/db";
-import { db } from "@openstatus/db/src/db";
-import { monitorRun } from "@openstatus/db/src/schema";
-import { monitorStatusTable } from "@openstatus/db/src/schema/monitor_status/monitor_status";
-import { selectMonitorStatusSchema } from "@openstatus/db/src/schema/monitor_status/validation";
-import { monitor } from "@openstatus/db/src/schema/monitors/monitor";
-import { selectMonitorSchema } from "@openstatus/db/src/schema/monitors/validation";
-import { getLimit } from "@openstatus/db/src/schema/plan/utils";
-import type { httpPayloadSchema, tpcPayloadSchema } from "@openstatus/utils";
-import { HTTPException } from "hono/http-exception";
-import type { monitorsApi } from "..";
-import { env } from "../../../env";
-import { openApiErrorResponses } from "../../../libs/errors/openapi-error-responses";
 import {
   HTTPTriggerResult,
   ParamsSchema,
   TCPTriggerResult,
   TriggerResult,
 } from "../schema";
+import { and, eq, gte, isNull, sql } from "@openstatus/db";
+import { createRoute, z } from "@hono/zod-openapi";
+import type { httpPayloadSchema, tpcPayloadSchema } from "@openstatus/utils";
+
+import { HTTPException } from "hono/http-exception";
+import { db } from "@openstatus/db/src/db";
+import { env } from "../../../env";
+import { getLimit } from "@openstatus/db/src/schema/plan/utils";
+import { monitor } from "@openstatus/db/src/schema/monitors/monitor";
+import { monitorRun } from "@openstatus/db/src/schema";
+import { monitorStatusTable } from "@openstatus/db/src/schema/monitor_status/monitor_status";
+import type { monitorsApi } from "..";
+import { openApiErrorResponses } from "../../../libs/errors/openapi-error-responses";
+import { selectMonitorSchema } from "@openstatus/db/src/schema/monitors/validation";
+import { selectMonitorStatusSchema } from "@openstatus/db/src/schema/monitor_status/validation";
 
 const triggerMonitor = createRoute({
   method: "post",
@@ -66,8 +67,8 @@ export function registerRunMonitor(api: typeof monitorsApi) {
         .where(
           and(
             eq(monitorRun.workspaceId, Number(workspaceId)),
-            gte(monitorRun.createdAt, new Date(lastMonth)),
-          ),
+            gte(monitorRun.createdAt, new Date(lastMonth))
+          )
         )
         .all()
     )[0].count;
@@ -85,8 +86,8 @@ export function registerRunMonitor(api: typeof monitorsApi) {
         and(
           eq(monitor.id, Number(id)),
           eq(monitor.workspaceId, Number(workspaceId)),
-          isNull(monitor.deletedAt),
-        ),
+          isNull(monitor.deletedAt)
+        )
       )
       .get();
 
@@ -218,9 +219,9 @@ export function registerRunMonitor(api: typeof monitorsApi) {
 function generateUrl({ row }: { row: z.infer<typeof selectMonitorSchema> }) {
   switch (row.jobType) {
     case "http":
-      return `https://openstatus-checker.fly.dev/checker/http?monitor_id=${row.id}&trigger=api&data=true`;
+      return `https://zk-openstatus-checker.fly.dev/checker/http?monitor_id=${row.id}&trigger=api&data=true`;
     case "tcp":
-      return `https://openstatus-checker.fly.dev/checker/tcp?monitor_id=${row.id}&trigger=api&data=true`;
+      return `https://zk-openstatus-checker.fly.dev/checker/tcp?monitor_id=${row.id}&trigger=api&data=true`;
     default:
       throw new Error("Invalid jobType");
   }

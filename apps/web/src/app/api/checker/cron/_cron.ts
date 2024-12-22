@@ -1,10 +1,5 @@
-import { CloudTasksClient } from "@google-cloud/tasks";
-import type { google } from "@google-cloud/tasks/build/protos/protos";
-import type { NextRequest } from "next/server";
-import { z } from "zod";
-
 import { and, db, eq, gte, lte, notInArray } from "@openstatus/db";
-import type { MonitorStatus } from "@openstatus/db/src/schema";
+import type { httpPayloadSchema, tpcPayloadSchema } from "@openstatus/utils";
 import {
   maintenance,
   maintenancesToMonitors,
@@ -14,8 +9,12 @@ import {
   selectMonitorStatusSchema,
 } from "@openstatus/db/src/schema";
 
+import { CloudTasksClient } from "@google-cloud/tasks";
+import type { MonitorStatus } from "@openstatus/db/src/schema";
+import type { NextRequest } from "next/server";
 import { env } from "@/env";
-import type { httpPayloadSchema, tpcPayloadSchema } from "@openstatus/utils";
+import type { google } from "@google-cloud/tasks/build/protos/protos";
+import { z } from "zod";
 
 const periodicityAvailable = selectMonitorSchema.pick({ periodicity: true });
 
@@ -45,7 +44,7 @@ export const cron = async ({
   const parent = client.queuePath(
     env.GCP_PROJECT_ID,
     env.GCP_LOCATION,
-    periodicity,
+    periodicity
   );
 
   const timestamp = Date.now();
@@ -54,7 +53,7 @@ export const cron = async ({
     .select({ id: maintenance.id })
     .from(maintenance)
     .where(
-      and(lte(maintenance.from, new Date()), gte(maintenance.to, new Date())),
+      and(lte(maintenance.from, new Date()), gte(maintenance.to, new Date()))
     )
     .as("currentMaintenance");
 
@@ -63,7 +62,7 @@ export const cron = async ({
     .from(maintenancesToMonitors)
     .innerJoin(
       currentMaintenance,
-      eq(maintenancesToMonitors.maintenanceId, currentMaintenance.id),
+      eq(maintenancesToMonitors.maintenanceId, currentMaintenance.id)
     );
 
   const result = await db
@@ -73,8 +72,8 @@ export const cron = async ({
       and(
         eq(monitor.periodicity, periodicity),
         eq(monitor.active, true),
-        notInArray(monitor.id, currentMaintenanceMonitors),
-      ),
+        notInArray(monitor.id, currentMaintenanceMonitors)
+      )
     )
     .all();
 
@@ -98,7 +97,7 @@ export const cron = async ({
     const monitorStatus = z.array(selectMonitorStatusSchema).safeParse(result);
     if (!monitorStatus.success) {
       console.error(
-        `Error while fetching the monitor status ${monitorStatus.error.errors}`,
+        `Error while fetching the monitor status ${monitorStatus.error.errors}`
       );
       continue;
     }
@@ -137,7 +136,7 @@ export const cron = async ({
   const failed = allRequests.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `End cron for ${periodicity} with ${allResult.length} jobs with ${success} success and ${failed} failed`,
+    `End cron for ${periodicity} with ${allResult.length} jobs with ${success} success and ${failed} failed`
   );
 };
 // timestamp needs to be in ms
@@ -218,9 +217,9 @@ const createCronTask = async ({
 function generateUrl({ row }: { row: z.infer<typeof selectMonitorSchema> }) {
   switch (row.jobType) {
     case "http":
-      return `https://openstatus-checker.fly.dev/checker/http?monitor_id=${row.id}`;
+      return `https://zk-openstatus-checker.fly.dev/checker/http?monitor_id=${row.id}`;
     case "tcp":
-      return `https://openstatus-checker.fly.dev/checker/tcp?monitor_id=${row.id}`;
+      return `https://zk-openstatus-checker.fly.dev/checker/tcp?monitor_id=${row.id}`;
     default:
       throw new Error("Invalid jobType");
   }

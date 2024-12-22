@@ -66,30 +66,33 @@ export function registerHTTPPostCheck(api: typeof checkAPI) {
     for (let count = 0; count < input.runCount; count++) {
       const currentFetch = [];
       for (const region of input.regions) {
-        const r = fetch(`https://openstatus-checker.fly.dev/ping/${region}`, {
-          headers: {
-            Authorization: `Basic ${env.CRON_SECRET}`,
-            "Content-Type": "application/json",
-            "fly-prefer-region": region,
-          },
-          method: "POST",
-          body: JSON.stringify({
-            requestId: newCheck.id,
-            workspaceId: workspaceId,
-            url: input.url,
-            method: input.method,
-            headers: input.headers?.reduce((acc, { key, value }) => {
-              if (!key) return acc; // key === "" is an invalid header
+        const r = fetch(
+          `https://zk-openstatus-checker.fly.dev/ping/${region}`,
+          {
+            headers: {
+              Authorization: `Basic ${env.CRON_SECRET}`,
+              "Content-Type": "application/json",
+              "fly-prefer-region": region,
+            },
+            method: "POST",
+            body: JSON.stringify({
+              requestId: newCheck.id,
+              workspaceId: workspaceId,
+              url: input.url,
+              method: input.method,
+              headers: input.headers?.reduce((acc, { key, value }) => {
+                if (!key) return acc; // key === "" is an invalid header
 
-              return {
-                // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
-                ...acc,
-                [key]: value,
-              };
-            }, {}),
-            body: input.body ? input.body : undefined,
-          }),
-        });
+                return {
+                  // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+                  ...acc,
+                  [key]: value,
+                };
+              }, {}),
+              body: input.body ? input.body : undefined,
+            }),
+          }
+        );
         currentFetch.push(r);
       }
 
@@ -157,10 +160,10 @@ function getTiming(data: z.infer<typeof ResponseSchema>[]): ReturnGetTiming {
       prev.dns.push(curr.timing.dnsDone - curr.timing.dnsStart);
       prev.connect.push(curr.timing.connectDone - curr.timing.connectStart);
       prev.tls.push(
-        curr.timing.tlsHandshakeDone - curr.timing.tlsHandshakeStart,
+        curr.timing.tlsHandshakeDone - curr.timing.tlsHandshakeStart
       );
       prev.firstByte.push(
-        curr.timing.firstByteDone - curr.timing.firstByteStart,
+        curr.timing.firstByteDone - curr.timing.firstByteStart
       );
       prev.transfer.push(curr.timing.transferDone - curr.timing.transferStart);
       prev.latency.push(curr.latency);
@@ -173,7 +176,7 @@ function getTiming(data: z.infer<typeof ResponseSchema>[]): ReturnGetTiming {
       firstByte: [],
       transfer: [],
       latency: [],
-    } as ReturnGetTiming,
+    } as ReturnGetTiming
   );
 }
 

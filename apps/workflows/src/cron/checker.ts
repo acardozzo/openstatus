@@ -30,12 +30,12 @@ const client = new CloudTasksClient({
 });
 
 export async function sendCheckerTasks(
-  periodicity: z.infer<typeof monitorPeriodicitySchema>,
+  periodicity: z.infer<typeof monitorPeriodicitySchema>
 ) {
   const parent = client.queuePath(
     env().GCP_PROJECT_ID,
     env().GCP_LOCATION,
-    periodicity,
+    periodicity
   );
 
   const timestamp = Date.now();
@@ -44,7 +44,7 @@ export async function sendCheckerTasks(
     .select({ id: maintenance.id })
     .from(maintenance)
     .where(
-      and(lte(maintenance.from, new Date()), gte(maintenance.to, new Date())),
+      and(lte(maintenance.from, new Date()), gte(maintenance.to, new Date()))
     )
     .as("currentMaintenance");
 
@@ -53,7 +53,7 @@ export async function sendCheckerTasks(
     .from(maintenancesToMonitors)
     .innerJoin(
       currentMaintenance,
-      eq(maintenancesToMonitors.maintenanceId, currentMaintenance.id),
+      eq(maintenancesToMonitors.maintenanceId, currentMaintenance.id)
     );
 
   const result = await db
@@ -63,8 +63,8 @@ export async function sendCheckerTasks(
       and(
         eq(monitor.periodicity, periodicity),
         eq(monitor.active, true),
-        notInArray(monitor.id, currentMaintenanceMonitors),
-      ),
+        notInArray(monitor.id, currentMaintenanceMonitors)
+      )
     )
     .all();
 
@@ -88,7 +88,7 @@ export async function sendCheckerTasks(
 
     if (!monitorStatus.success) {
       console.error(
-        `Error while fetching the monitor status ${monitorStatus.error.errors}`,
+        `Error while fetching the monitor status ${monitorStatus.error.errors}`
       );
       continue;
     }
@@ -128,7 +128,7 @@ export async function sendCheckerTasks(
   const failed = allRequests.filter((r) => r.status === "rejected").length;
 
   console.log(
-    `End cron for ${periodicity} with ${allResult.length} jobs with ${success} success and ${failed} failed`,
+    `End cron for ${periodicity} with ${allResult.length} jobs with ${success} success and ${failed} failed`
   );
 }
 
@@ -172,7 +172,7 @@ async function createCronTask({
       timeout: monitor.timeout,
       trigger: "cron",
     } satisfies z.infer<typeof httpPayloadSchema>;
-    url = `https://openstatus-checker.fly.dev/checker/http?monitor_id=${monitor.id}`;
+    url = `https://zk-openstatus-checker.fly.dev/checker/http?monitor_id=${monitor.id}`;
   }
   if (monitor.jobType === "tcp") {
     payload = {
@@ -186,7 +186,7 @@ async function createCronTask({
       timeout: monitor.timeout,
       trigger: "cron",
     } satisfies z.infer<typeof tpcPayloadSchema>;
-    url = `https://openstatus-checker.fly.dev/checker/tcp?monitor_id=${monitor.id}`;
+    url = `https://zk-openstatus-checker.fly.dev/checker/tcp?monitor_id=${monitor.id}`;
   }
 
   if (!payload || !url) {
