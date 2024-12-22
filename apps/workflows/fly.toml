@@ -3,8 +3,8 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'zk-openstatus-workflows'
-primary_region = 'ams'
+app = "zk-openstatus-workflows"
+primary_region = "ams"
 
 [build]
   dockerfile = "./Dockerfile"
@@ -41,4 +41,3 @@ primary_region = 'ams'
 [env]
   NODE_ENV = "production"
   PORT = "3000"
-  
