@@ -10,6 +10,9 @@ on:
       - "packages/utils/**"
       - "packages/tsconfig/**"
 
+env:
+  APP_NAME: zk-openstatus-checker
+
 jobs:
   deploy-workflows:
     name: Deploy Workflows
@@ -20,7 +23,7 @@ jobs:
 
       - name: Set Fly.io Secrets
         run: |
-          flyctl secrets set \
+          flyctl secrets set -a ${{ env.APP_NAME }} \
           NODE_ENV=production \
           PORT=3000 \
           GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \
