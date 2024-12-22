@@ -5,6 +5,11 @@ on:
       - main
     paths:
       - "apps/screenshot-service/**"
+
+env:
+  APP_NAME: zk-openstatus-screenshot
+
+
 jobs:
   deploy-screenshot-service:
     name: Deploy screenshot-service
@@ -15,7 +20,7 @@ jobs:
       
       - name: Set Fly.io Secrets
         run: |
-          flyctl secrets set \
+          flyctl secrets set -a ${{ env.APP_NAME }} \
           R2_TOKEN=${{ secrets.R2_TOKEN }} \
           R2_URL=${{ secrets.R2_URL }} \
           R2_ACCESS_KEY=${{ secrets.R2_ACCESS_KEY }} \

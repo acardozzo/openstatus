@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+
+env:
+  APP_NAME: zk-openstatus-api
+
 jobs:
   deploy:
     name: Deploy API
@@ -13,7 +17,7 @@ jobs:
 
       - name: Set Fly.io Secrets
         run: |
-          flyctl secrets set \
+          flyctl secrets set -a ${{ env.APP_NAME }} \
           DATABASE_URL=${{ secrets.DATABASE_URL }} \
           DATABASE_AUTH_TOKEN=${{ secrets.DATABASE_AUTH_TOKEN }} \
           UNKEY_TOKEN=${{ secrets.UNKEY_TOKEN }} \

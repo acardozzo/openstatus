@@ -11,7 +11,7 @@ on:
       - "packages/tsconfig/**"
 
 env:
-  APP_NAME: zk-openstatus-checker
+  APP_NAME: zk-openstatus-workflows
 
 jobs:
   deploy-workflows:
