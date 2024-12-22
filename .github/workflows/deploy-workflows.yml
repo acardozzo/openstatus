@@ -21,3 +21,4 @@ jobs:
           flyctl deploy --remote-only --wait-timeout=500 --config fly.toml
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          
