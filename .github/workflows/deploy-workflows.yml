@@ -1,5 +1,4 @@
 name: Deploy Workflows
-
 on:
   push:
     branches:
@@ -18,23 +17,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      
+
+      - name: Set Fly.io Secrets
+        run: |
+          flyctl secrets set \
+          NODE_ENV=production \
+          PORT=3000 \
+          GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \
+          GCP_CLIENT_EMAIL=${{ secrets.GCP_CLIENT_EMAIL }} \
+          GCP_PRIVATE_KEY=${{ secrets.GCP_PRIVATE_KEY }} \
+          GCP_LOCATION=${{ secrets.GCP_LOCATION }} \
+          CRON_SECRET=${{ secrets.CRON_SECRET }} \
+          SITE_URL=${{ secrets.SITE_URL }} \
+          DATABASE_URL=${{ secrets.DATABASE_URL }} \
+          DATABASE_AUTH_TOKEN=${{ secrets.DATABASE_AUTH_TOKEN }} \
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }} \
+          TINY_BIRD_API_KEY=${{ secrets.TINY_BIRD_API_KEY }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Deploy Workflows
         run: |
           flyctl deploy --config apps/workflows/fly.toml \
-          --dockerfile apps/workflows/Dockerfile --remote-only --wait-timeout=500 \
-          --env NODE_ENV=production \
-          --env PORT=3000 \
-          --env GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \
-          --env GCP_CLIENT_EMAIL=${{ secrets.GCP_CLIENT_EMAIL }} \
-          --env GCP_PRIVATE_KEY=${{ secrets.GCP_PRIVATE_KEY }} \
-          --env GCP_LOCATION=${{ secrets.GCP_LOCATION }} \
-          --env CRON_SECRET=${{ secrets.CRON_SECRET }} \
-          --env SITE_URL=${{ secrets.SITE_URL }} \
-          --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
-          --env DATABASE_AUTH_TOKEN=${{ secrets.DATABASE_AUTH_TOKEN }} \
-          --env RESEND_API_KEY=${{ secrets.RESEND_API_KEY }} \
-          --env TINY_BIRD_API_KEY=${{ secrets.TINY_BIRD_API_KEY }}
-        
+          --dockerfile apps/workflows/Dockerfile --remote-only --wait-timeout=500
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

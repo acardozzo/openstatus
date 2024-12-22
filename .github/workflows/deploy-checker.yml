@@ -12,6 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Set Fly.io Secrets
+        run: |
+          flyctl secrets set \
+          FLY_REGION=${{ secrets.FLY_REGION }} \
+          REGION=${{ secrets.REGION }} \
+          CRON_SECRET=${{ secrets.CRON_SECRET }} \
+          TINYBIRD_TOKEN=${{ secrets.TINYBIRD_TOKEN }} \
+          LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
+          CLOUD_PROVIDER=${{ secrets.CLOUD_PROVIDER }} \
+          PORT=${{ secrets.PORT }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - working-directory: apps/checker
         name: Deploy Checker
         run: |
