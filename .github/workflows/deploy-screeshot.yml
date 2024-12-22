@@ -1,0 +1,20 @@
+name: Fly Deploy screenshot-service
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/screenshot-service/**"
+jobs:
+  deploy-screenshot-service:
+    name: Deploy screenshot-service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - working-directory: apps/screenshot-service
+        name: Deploy screenshot-service
+        run: |
+          flyctl deploy --remote-only --wait-timeout=500
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
