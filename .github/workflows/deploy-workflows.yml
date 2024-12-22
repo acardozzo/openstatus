@@ -1,4 +1,5 @@
-name: Fly Deploy Workflows
+name: Deploy Workflows
+
 on:
   push:
     branches:
@@ -9,6 +10,7 @@ on:
       - "packages/emails/**"
       - "packages/utils/**"
       - "packages/tsconfig/**"
+
 jobs:
   deploy-workflows:
     name: Deploy Workflows
@@ -16,10 +18,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
+      
       - name: Deploy Workflows
         run: |
-          flyctl deploy --config apps/workflows/fly.toml
-          --dockerfile  apps/workflows/Dockerfile --remote-only --wait-timeout=500
+          flyctl deploy --config apps/workflows/fly.toml \
+          --dockerfile apps/workflows/Dockerfile --remote-only --wait-timeout=500 \
+          --env NODE_ENV=production \
+          --env PORT=3000 \
+          --env GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \
+          --env GCP_CLIENT_EMAIL=${{ secrets.GCP_CLIENT_EMAIL }} \
+          --env GCP_PRIVATE_KEY=${{ secrets.GCP_PRIVATE_KEY }} \
+          --env GCP_LOCATION=${{ secrets.GCP_LOCATION }} \
+          --env CRON_SECRET=${{ secrets.CRON_SECRET }} \
+          --env SITE_URL=${{ secrets.SITE_URL }} \
+          --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
+          --env DATABASE_AUTH_TOKEN=${{ secrets.DATABASE_AUTH_TOKEN }} \
+          --env RESEND_API_KEY=${{ secrets.RESEND_API_KEY }} \
+          --env TINY_BIRD_API_KEY=${{ secrets.TINY_BIRD_API_KEY }}
+        
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
