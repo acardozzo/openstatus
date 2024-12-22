@@ -1,12 +1,12 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-import { apiReference } from "@scalar/hono-api-reference";
-import { cors } from "hono/cors";
-import { logger } from "hono/logger";
+import { handleError, handleZodError } from "../libs/errors";
 
 import type { Limits } from "@openstatus/db/src/schema/plan/schema";
-import { handleError, handleZodError } from "../libs/errors";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { apiReference } from "@scalar/hono-api-reference";
 import { checkAPI } from "./check";
+import { cors } from "hono/cors";
 import { incidentsApi } from "./incidents";
+import { logger } from "hono/logger";
 import { middleware } from "./middleware";
 import { monitorsApi } from "./monitors";
 import { notificationsApi } from "./notifications";
@@ -66,8 +66,8 @@ api.get(
     spec: {
       url: "/v1/openapi",
     },
-    baseServerURL: "https://api.openstatus.dev/v1",
-  }),
+    baseServerURL: "https://zk-openstatus-api.fly.dev/v1",
+  })
 );
 /**
  * Authentification Middleware
