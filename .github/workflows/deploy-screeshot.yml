@@ -12,8 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - working-directory: apps/screenshot-service
-        name: Deploy screenshot-service
+      - name: Deploy screenshot-service
         run: |
           flyctl deploy --remote-only --wait-timeout=500
         env:
