@@ -6,8 +6,6 @@ on:
     paths:
       - "apps/checker/**"
 
-env:
-  APP_NAME: zk-openstatus-checker
 
 jobs:
   deploy-checker:
@@ -19,7 +17,7 @@ jobs:
 
       - name: Set Fly.io Secrets
         run: |
-          flyctl secrets set -a ${{ env.APP_NAME }} \
+          flyctl secrets set -a "zk-openstatus-checker" \
           FLY_REGION=${{ secrets.FLY_REGION }} \
           REGION=${{ secrets.REGION }} \
           CRON_SECRET=${{ secrets.CRON_SECRET }} \
