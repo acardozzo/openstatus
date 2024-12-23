@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/openstatushq/openstatus/apps/checker/handlers"
+	"github.com/openstatushq/openstatus/apps/checker/pkg/logger"
 
 	"github.com/openstatushq/openstatus/apps/checker/pkg/tinybird"
 	"github.com/rs/zerolog/log"
@@ -37,12 +38,12 @@ func main() {
 	flyRegion := env("FLY_REGION", env("REGION", "local"))
 	cronSecret := env("CRON_SECRET", "")
 	tinyBirdToken := env("TINYBIRD_TOKEN", "")
-	logLevel := env("LOG_LEVEL", "warn")
+	logLevel := env("LOG_LEVEL", "info")
 	cloudProvider := env("CLOUD_PROVIDER", "fly")
 
 	log.Info().Msgf("Environment variables loaded: FLY_REGION=%s, CRON_SECRET=%s, TINYBIRD_TOKEN=%s, LOG_LEVEL=%s, CLOUD_PROVIDER=%s", flyRegion, cronSecret, tinyBirdToken, logLevel, cloudProvider)
 
-	// logger.Configure(logLevel)
+	logger.Configure(logLevel)
 
 	// packages.
 	log.Info().Msg("Configuring HTTP client")
