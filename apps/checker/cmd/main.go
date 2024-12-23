@@ -77,7 +77,7 @@ func main() {
 	})
 
 	httpServer := &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%s", env("PORT", "8080")),
+		Addr:    fmt.Sprintf("0.0.0.0:%s", env("PORT", "3000")),
 		Handler: router,
 	}
 
