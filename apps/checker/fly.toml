@@ -3,10 +3,9 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-[app]
-  name = "zk-openstatus-checker"
+app = "zk-openstatus-checker"
 
-  primary_region = "ams"
+primary_region = "ams"
 
 [build]
   dockerfile = "./Dockerfile"
