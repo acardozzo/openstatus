@@ -17,6 +17,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Verificar e Criar Máquina (se necessário)
+        run: |
+          if ! flyctl machines list -a ${{ env.APP_NAME }} | grep -q 'RUNNING\|STOPPED'; then
+            echo "Nenhuma máquina encontrada, criando uma nova..."
+            flyctl machine run docker.io/library/nginx -a ${{ env.APP_NAME }} --region ams
+          else
+            echo "Máquina já existente, continuando com o deploy..."
+          fi
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Set Fly.io Secrets
         run: |
           flyctl secrets set -a ${{ env.APP_NAME }} \
