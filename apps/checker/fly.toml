@@ -4,9 +4,9 @@
 #
 
 [app]
-name = "zk-openstatus-checker"
+  name = "zk-openstatus-checker"
 
-primary_region = "ams"
+  primary_region = "ams"
 
 [build]
   dockerfile = "./Dockerfile"
