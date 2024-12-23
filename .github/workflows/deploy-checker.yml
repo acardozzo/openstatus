@@ -33,6 +33,7 @@ jobs:
       - working-directory: apps/checker
         name: Deploy Checker
         run: |
-          flyctl deploy --remote-only --wait-timeout=500
+          flyctl deploy --config apps/checker/fly.toml \
+          --dockerfile apps/checker/Dockerfile --remote-only --wait-timeout=500
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
