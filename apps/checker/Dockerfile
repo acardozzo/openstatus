@@ -28,4 +28,6 @@ ENV TZ=UTC
 ENV USER=1000
 ENV GIN_MODE=release
 
+EXPOSE 8080
+
 CMD [ "/opt/bin/checker" ]
